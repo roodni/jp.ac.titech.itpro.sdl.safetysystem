@@ -1,3 +1,10 @@
 <resources>
-    <string name="app_name">SafetySystem</string>
+    <string name="app_name">安否自動報告システム</string>
+
+    <string name="pref_name">jp.ac.titech.itpro.sdl.safetysystem</string>
+    <string name="pref_key_access_token"></string>
+
+    <string name="dialog_token_update_invalid">access_tokenが無効です</string>
+    <string name="dialog_token_update_fail">access_tokenの確認に失敗しました</string>
+    <string name="dialog_token_update_valid">access_tokenを登録しました</string>
 </resources>
