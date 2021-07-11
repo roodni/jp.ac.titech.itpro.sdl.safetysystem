@@ -2,7 +2,11 @@
     <string name="app_name">安否自動報告システム</string>
 
     <string name="pref_name">jp.ac.titech.itpro.sdl.safetysystem</string>
-    <string name="pref_key_access_token"></string>
+    <string name="pref_key_access_token">access_token</string>
+    <string name="pref_key_access_token_target">access_token_target</string>
+    <string name="pref_key_is_access_token_registered">is_access_token_registered</string>
+
+    <string name="text_view_target_not_registered">未登録</string>
 
     <string name="dialog_token_update_invalid">access_tokenが無効です</string>
     <string name="dialog_token_update_fail">access_tokenの確認に失敗しました</string>

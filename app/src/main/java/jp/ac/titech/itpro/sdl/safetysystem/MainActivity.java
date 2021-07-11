@@ -2,6 +2,7 @@ package jp.ac.titech.itpro.sdl.safetysystem;
 
 import androidx.appcompat.app.AlertDialog;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.widget.TextViewCompat;
 
 import android.content.Context;
 import android.content.Intent;
@@ -19,6 +20,7 @@ import android.widget.TextView;
 import org.jetbrains.annotations.NotNull;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.io.IOException;
 import java.util.concurrent.ExecutionException;
@@ -33,12 +35,6 @@ import okhttp3.Response;
 
 public class MainActivity extends AppCompatActivity {
     private static final String TAG = "MainActivity";
-
-    private Button buttonTokenWebPage;
-    private EditText editTextToken;
-    private Button buttonTokenUpdate;
-    private Button buttonTestSend;
-
     private SharedPreferences sharedPref;
 
     @Override
@@ -46,13 +42,9 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        buttonTokenWebPage = findViewById(R.id.buttonTokenWebPage);
-        editTextToken = findViewById(R.id.editTextToken);
-        buttonTokenUpdate = findViewById(R.id.buttonTokenUpdate);
-        buttonTestSend = findViewById(R.id.buttonTestSend);
-
         sharedPref = getSharedPreferences(getString(R.string.pref_name), Context.MODE_PRIVATE);
 
+        Button buttonTokenWebPage = findViewById(R.id.buttonTokenWebPage);
         buttonTokenWebPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -62,9 +54,11 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button buttonTokenUpdate = findViewById(R.id.buttonTokenUpdate);
         buttonTokenUpdate.setOnClickListener(new View.OnClickListener() {
             @Override public void onClick(View v) {
                 v.setEnabled(false);
+                EditText editTextToken = findViewById(R.id.editTextToken);
                 String accessToken = editTextToken.getText().toString();
                 Runnable invalid = () -> {
                     // トークンが無効だった場合
@@ -82,7 +76,6 @@ public class MainActivity extends AppCompatActivity {
                             .setMessage(R.string.dialog_token_update_fail)
                             .show();
                 };
-
                 OkHttpClient client = new OkHttpClient();
                 try {
                     Request request = new Request.Builder()
@@ -109,6 +102,8 @@ public class MainActivity extends AppCompatActivity {
                                     // トークンの保存
                                     SharedPreferences.Editor editor = sharedPref.edit();
                                     editor.putString(getString(R.string.pref_key_access_token), accessToken);
+                                    editor.putString(getString(R.string.pref_key_access_token_target), target);
+                                    editor.putBoolean(getString(R.string.pref_key_is_access_token_registered), true);
                                     editor.apply();
                                     // UIの更新
                                     handler.post(() -> {
@@ -135,6 +130,7 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button buttonTestSend = findViewById(R.id.buttonTestSend);
         buttonTestSend.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -168,12 +164,34 @@ public class MainActivity extends AppCompatActivity {
             }
         });
 
+        Button buttonTokenDelete = findViewById(R.id.buttonTokenDelete);
+        buttonTokenDelete.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                SharedPreferences.Editor editor = sharedPref.edit();
+                editor.putBoolean(getString(R.string.pref_key_is_access_token_registered), false);
+                editor.apply();
+                updateViewTokenState();
+            }
+        });
+
         updateViewTokenState();
     }
 
     private void updateViewTokenState() {
-        String accessToken = sharedPref.getString(getString(R.string.pref_key_access_token), "");
-        TextView textView = findViewById(R.id.textView);
-        textView.setText(accessToken);
+        TextView textViewTarget = findViewById(R.id.textViewTarget);
+        Button buttonTestSend = findViewById(R.id.buttonTestSend);
+
+        Boolean isTokenRegistered = sharedPref.getBoolean(getString(R.string.pref_key_is_access_token_registered), false);
+        if (isTokenRegistered) {
+            String target = sharedPref.getString(getString(R.string.pref_key_access_token_target), "");
+            textViewTarget.setText(target);
+            TextViewCompat.setTextAppearance(textViewTarget, R.style.TextViewTarget);
+            buttonTestSend.setEnabled(true);
+        } else {
+            textViewTarget.setText(R.string.text_view_target_not_registered);
+            TextViewCompat.setTextAppearance(textViewTarget, R.style.TextAppearance_AppCompat_Medium);
+            buttonTestSend.setEnabled(false);
+        }
     }
 }
