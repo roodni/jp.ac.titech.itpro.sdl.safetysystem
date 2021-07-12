@@ -14,7 +14,9 @@ import android.os.Looper;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.CompoundButton;
 import android.widget.EditText;
+import android.widget.Switch;
 import android.widget.TextView;
 
 import org.jetbrains.annotations.NotNull;
@@ -23,6 +25,11 @@ import org.json.JSONObject;
 import org.w3c.dom.Text;
 
 import java.io.IOException;
+import java.security.Key;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 import java.util.concurrent.ExecutionException;
 
 import okhttp3.Call;
@@ -48,7 +55,7 @@ public class MainActivity extends AppCompatActivity {
         buttonTokenWebPage.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Uri uri = Uri.parse("https://notify-bot.line.me/my/");
+                Uri uri = Uri.parse(getString(R.string.url_line_notify_my_page));
                 Intent i = new Intent(Intent.ACTION_VIEW, uri);
                 startActivity(i);
             }
@@ -79,7 +86,7 @@ public class MainActivity extends AppCompatActivity {
                 OkHttpClient client = new OkHttpClient();
                 try {
                     Request request = new Request.Builder()
-                            .url("https://notify-api.line.me/api/status")
+                            .url(getString(R.string.url_line_notify_api_status))
                             .addHeader("Authorization", "Bearer " + accessToken)
                             .get()
                             .build();
@@ -142,7 +149,7 @@ public class MainActivity extends AppCompatActivity {
                         .build();
                 try {
                     Request request = new Request.Builder()
-                            .url("https://notify-api.line.me/api/notify")
+                            .url(getString(R.string.url_line_notify_api_notify))
                             .addHeader("Authorization", "Bearer " + accessToken)
                             .post(requestBody)
                             .build();
@@ -174,6 +181,42 @@ public class MainActivity extends AppCompatActivity {
                 updateViewTokenState();
             }
         });
+
+        Switch switchSafety = findViewById(R.id.switchSafety);
+        Boolean is_safety_notify_active = sharedPref.getBoolean(getString(R.string.pref_key_is_safety_notify_active), false);
+        switchSafety.setChecked(is_safety_notify_active);
+        switchSafety.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                if (isChecked) {
+                    // 監視を開始する
+                    Log.d(TAG, "checked");
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putBoolean(getString(R.string.pref_key_is_safety_notify_active), true);
+                    editor.putLong(getString(R.string.pref_key_latest_user_present_time), System.currentTimeMillis());
+                    editor.apply();
+                    KeyguardCheckAlarmReceiver.setAlarmLoop(MainActivity.this, 0);
+                } else {
+                    // 監視を終了する
+                    Log.d(TAG, "unchecked");
+                    SharedPreferences.Editor editor = sharedPref.edit();
+                    editor.putBoolean(getString(R.string.pref_key_is_safety_notify_active), false);
+                    editor.putLong(getString(R.string.pref_key_latest_user_present_time), 0);   // あとでけす
+                    editor.apply();
+                }
+            }
+        });
+
+        // あとで直す
+        TextView textViewLatestTime = findViewById(R.id.textViewLatestTime);
+        Long latestUserPresentTime = sharedPref.getLong(getString(R.string.pref_key_latest_user_present_time), 0);
+        if (latestUserPresentTime > 0) {
+            DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
+            Date date = new Date(latestUserPresentTime);
+            textViewLatestTime.setText(format.format(date));
+        } else {
+            textViewLatestTime.setText("無");
+        }
 
         updateViewTokenState();
     }

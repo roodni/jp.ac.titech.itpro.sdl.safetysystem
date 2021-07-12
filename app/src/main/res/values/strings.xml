@@ -5,10 +5,16 @@
     <string name="pref_key_access_token">access_token</string>
     <string name="pref_key_access_token_target">access_token_target</string>
     <string name="pref_key_is_access_token_registered">is_access_token_registered</string>
+    <string name="pref_key_is_safety_notify_active">is_safety_notify_active</string>
+    <string name="pref_key_latest_user_present_time">latest_user_present_time</string>
 
     <string name="text_view_target_not_registered">未登録</string>
 
     <string name="dialog_token_update_invalid">access_tokenが無効です</string>
     <string name="dialog_token_update_fail">access_tokenの確認に失敗しました</string>
     <string name="dialog_token_update_valid">access_tokenを登録しました</string>
+
+    <string name="url_line_notify_my_page">https://notify-bot.line.me/my/</string>
+    <string name="url_line_notify_api_status">https://notify-api.line.me/api/status</string>
+    <string name="url_line_notify_api_notify">https://notify-api.line.me/api/notify</string>
 </resources>
