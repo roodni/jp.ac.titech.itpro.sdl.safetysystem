@@ -144,7 +144,7 @@ public class MainActivity extends AppCompatActivity {
                 String accessToken = sharedPref.getString(getString(R.string.pref_key_access_token), "");
                 OkHttpClient client = new OkHttpClient();
                 RequestBody requestBody = new FormBody.Builder()
-                        .add("message", "送信テストです")
+                        .add("message", getString(R.string.line_notify_test_message))
                         .build();
                 try {
                     Request request = new Request.Builder()
@@ -195,13 +195,14 @@ public class MainActivity extends AppCompatActivity {
                     editor.apply();
                     updateViewSafety();
                     KeyguardCheckAlarmReceiver.setAlarmLoop(MainActivity.this, 0);
-//                    SafetyNotifyAlarmReceiver.setAlarmLoop(MainActivity.this, 0);
+                    SafetyNotifyAlarmReceiver.setAlarmLoop(MainActivity.this, 0);
                 } else {
                     // 監視を終了する
                     Log.d(TAG, "unchecked");
                     SharedPreferences.Editor editor = sharedPref.edit();
                     editor.putBoolean(getString(R.string.pref_key_is_safety_notify_active), false);
-                    editor.putLong(getString(R.string.pref_key_latest_user_present_time), 0);   // あとでけす
+                    editor.putLong(getString(R.string.pref_key_latest_user_present_time), 0);
+                    editor.putLong(getString(R.string.pref_key_latest_notify_time), 0);
                     editor.apply();
                     updateViewSafety();
                 }
@@ -235,15 +236,27 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void updateViewSafety() {
-        // あとで直す
-        TextView textViewLatestTime = findViewById(R.id.textViewLatestTime);
-        Long latestUserPresentTime = sharedPref.getLong(getString(R.string.pref_key_latest_user_present_time), 0);
-        if (latestUserPresentTime > 0) {
-            DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
-            Date date = new Date(latestUserPresentTime);
-            textViewLatestTime.setText(format.format(date));
-        } else {
-            textViewLatestTime.setText("無");
+        DateFormat format = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss", Locale.getDefault());
+
+        {
+            TextView textViewLatestTime = findViewById(R.id.textViewLatestTime);
+            Long latestUserPresentTime = sharedPref.getLong(getString(R.string.pref_key_latest_user_present_time), 0);
+            if (latestUserPresentTime > 0) {
+                Date date = new Date(latestUserPresentTime);
+                textViewLatestTime.setText(format.format(date));
+            } else {
+                textViewLatestTime.setText(R.string.text_view_time_not_saved);
+            }
+        }
+        {
+            TextView textViewNotifyTime = findViewById(R.id.textViewNotifyTime);
+            Long latestNotifyTime = sharedPref.getLong(getString(R.string.pref_key_latest_notify_time), 0);
+            if (latestNotifyTime > 0) {
+                Date date = new Date(latestNotifyTime);
+                textViewNotifyTime.setText(format.format(date));
+            } else {
+                textViewNotifyTime.setText(R.string.text_view_time_not_saved);
+            }
         }
     }
 }

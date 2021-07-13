@@ -7,8 +7,11 @@
     <string name="pref_key_is_access_token_registered">is_access_token_registered</string>
     <string name="pref_key_is_safety_notify_active">is_safety_notify_active</string>
     <string name="pref_key_latest_user_present_time">latest_user_present_time</string>
+    <string name="pref_key_latest_notify_time">latest_notify_time</string>
 
     <string name="text_view_target_not_registered">未登録</string>
+
+    <string name="text_view_time_not_saved">無</string>
 
     <string name="dialog_token_update_invalid">access_tokenが無効です</string>
     <string name="dialog_token_update_fail">access_tokenの確認に失敗しました</string>
@@ -17,4 +20,12 @@
     <string name="url_line_notify_my_page">https://notify-bot.line.me/my/</string>
     <string name="url_line_notify_api_status">https://notify-api.line.me/api/status</string>
     <string name="url_line_notify_api_notify">https://notify-api.line.me/api/notify</string>
+
+    <string name="line_notify_test_message">安否自動報告システムのテストメッセージです。一人暮らしの使用者が一定時間スマートフォンを操作していないときに通知します。</string>
+    <string name="line_notify_emergency_message">スマートフォンがしばらく操作されていません。使用者が動けなくなっている可能性があります。安否を確認してください。</string>
+
+    <string name="notify_channel_name">自動報告動作通知</string>
+    <string name="notify_title">安否自動報告</string>
+    <string name="notify_message_default">動作しています</string>
+    <string name="notify_message_token_not_registered">access_tokenが未登録です</string>
 </resources>
