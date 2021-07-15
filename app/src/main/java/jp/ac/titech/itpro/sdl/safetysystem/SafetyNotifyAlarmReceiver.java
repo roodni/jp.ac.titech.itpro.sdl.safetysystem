@@ -37,7 +37,7 @@ public class SafetyNotifyAlarmReceiver extends BroadcastReceiver {
     private final static int NOTIFICATION_ID_NORMAL = 1;
     private final static int NOTIFICATION_ID_FAILED = 2;
 
-    private final static long TIME_LIMIT = 24 * 60 * 60 * 1000;  // 24 h
+    private final static long TIME_LIMIT =  24 * 60 * 60 * 1000;  // 24 h
 
     public static void setAlarmLoop(Context context, long nextMillis) {
         Log.d(TAG, "setAlarmLoop");
@@ -92,6 +92,12 @@ public class SafetyNotifyAlarmReceiver extends BroadcastReceiver {
                         @Override
                         public void onFailure(@NotNull Call call, @NotNull IOException e) {
                             Log.d(TAG, "onFailure");
+                            Notification notification = new NotificationCompat.Builder(c, CHANNEL_ID)
+                                    .setSmallIcon(R.drawable.ic_launcher_background)
+                                    .setContentTitle("ネットワークエラー")
+                                    .setContentText("LINE Notifyの通知に失敗しました")
+                                    .build();
+                            notificationManager.notify(NOTIFICATION_ID_FAILED, notification);
                         }
                         @Override
                         public void onResponse(@NotNull Call call, @NotNull Response response) throws IOException {
